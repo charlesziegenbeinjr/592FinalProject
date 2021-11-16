@@ -10,9 +10,9 @@ class Node:
         self.move = move
         self.children = set()
         self.parent = parent
-        # self.N = 0
-        # self.n = 0
-        self.v = 0#np.random.randint(10)
+        self.N = 0
+        self.n = 0
+        self.v = 0
 
     def get_heuristic(self, curr_player):
         self.v = heuristics.get_material_value(self.board_state, curr_player)

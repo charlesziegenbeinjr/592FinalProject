@@ -6,6 +6,7 @@ import chess
 import numpy as np
 from enum import Enum
 from alpha_beta_ai import depth_limited_ab_search
+from mcts_ai import mcts
 from node import Node
 import copy
 
@@ -31,6 +32,7 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
                 curr_move = input(curr_side + ", make a move: ")
             else:
                 if (curr_side == "W" and white == "random_ai") or (curr_side == "B" and black == "random_ai"):
+                    print("HERE")
                     possible_moves = list(board.legal_moves)
                     move_idx = rng.choice(len(possible_moves))
                     curr_move = possible_moves[move_idx].uci()
@@ -38,7 +40,8 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
                     node = Node(board_state=copy.deepcopy(board))
                     value, curr_move = depth_limited_ab_search(node, DEPTH, -np.infty, np.infty, True, curr_side)
                 elif (curr_side == "W" and white == "mcts_ai") or (curr_side == "B" and black == "mcts_ai"):
-                    pass
+                    node = Node(board_state=copy.deepcopy(board))
+                    curr_move = board.parse_san(mcts(node)).uci()
                 else:
                     print("Invalid AI type")
                     return
@@ -68,7 +71,7 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
 
 
 def main():
-    host_game(white="alpha_beta_ai", black="alpha_beta_ai")
-
+    # host_game(white="alpha_beta_ai", black="alpha_beta_ai")
+    host_game(white="mcts_ai", black="random_ai")
 if __name__ == "__main__":
     main()

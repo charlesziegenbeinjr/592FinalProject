@@ -22,6 +22,7 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
     rng = np.random.default_rng()
     board = setup_board(initial_setup)
     curr_side = "W"
+    pgn = []
     while not board.outcome():
         curr_move = -1
         count = 0
@@ -55,6 +56,7 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
             curr_side = "W"
         if print_updates:
             print(board)
+        pgn.append(curr_move)
     game_outcome = board.outcome()
     game_termination = game_outcome.termination.name
     if print_output:
@@ -67,6 +69,7 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
         else:
             print("Outcome:", game_termination)
         print("Number of moves:", board.fullmove_number)
+    print(" ".join(pgn))
     return game_outcome.result()
 
 

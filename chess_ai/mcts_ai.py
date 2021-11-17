@@ -50,11 +50,11 @@ def playout(currentNode):
     else:
         chessboard = currentNode.board_state
         if chessboard.result() == "1-0":
-            return 1
+            return (currentNode, 1)
         elif chessboard.result() == "0-1":
-            return -1
+            return (currentNode,-1)
         else:
-            return 0
+            return (currentNode,0)
 
 
 def backpropagate(currentNode, result):
@@ -80,12 +80,12 @@ def mcts(currentNode):
         currentNode.children.add(descendant)
         move_map[descendant] = i
 
-    sims = 2  # I.E "Until We Run Out of Time..."
+    sims = 10  # I.E "Until We Run Out of Time..."
     while (sims > 0):
-        leaf = selection(currentNode, move_map, False)
-        child = expansion(leaf)
-        reward = playout(child)
-        currentNode = backpropagate(child, reward)
+        child = selection(currentNode, move_map, False)
+        leaf = expansion(child)
+        finalNode, reward = playout(leaf)
+        currentNode = backpropagate(finalNode, reward)
         sims -= 1
 
 

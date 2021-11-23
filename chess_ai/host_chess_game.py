@@ -71,7 +71,7 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
 
 
 def main():
-    # host_game(white="alpha_beta_ai", black="alpha_beta_ai")
+    # host_game(white="alpha_beta_ai", black="random_ai")
     host_game(white="mcts_ai", black="random_ai")
 if __name__ == "__main__":
     main()

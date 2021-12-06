@@ -32,7 +32,6 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
                 curr_move = input(curr_side + ", make a move: ")
             else:
                 if (curr_side == "W" and white == "random_ai") or (curr_side == "B" and black == "random_ai"):
-                    print("HERE")
                     possible_moves = list(board.legal_moves)
                     move_idx = rng.choice(len(possible_moves))
                     curr_move = possible_moves[move_idx].uci()

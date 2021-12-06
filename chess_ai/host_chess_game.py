@@ -9,8 +9,9 @@ from alpha_beta_ai import depth_limited_ab_search
 from mcts_ai import mcts
 from node import Node
 import copy
+import utils
 
-DEPTH = 2
+DEPTH = {"W": 2, "B": 3}
 
 
 def setup_board(initial_setup=""):
@@ -32,13 +33,12 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
                 curr_move = input(curr_side + ", make a move: ")
             else:
                 if (curr_side == "W" and white == "random_ai") or (curr_side == "B" and black == "random_ai"):
-                    print("HERE")
                     possible_moves = list(board.legal_moves)
                     move_idx = rng.choice(len(possible_moves))
                     curr_move = possible_moves[move_idx].uci()
                 elif (curr_side == "W" and white == "alpha_beta_ai") or (curr_side == "B" and black == "alpha_beta_ai"):
                     node = Node(board_state=copy.deepcopy(board))
-                    value, curr_move = depth_limited_ab_search(node, DEPTH, -np.infty, np.infty, True, curr_side)
+                    value, curr_move = depth_limited_ab_search(node, DEPTH[curr_side], -np.infty, np.infty, True, curr_side)
                 elif (curr_side == "W" and white == "mcts_ai") or (curr_side == "B" and black == "mcts_ai"):
                     node = Node(board_state=copy.deepcopy(board))
                     curr_move = board.parse_san(mcts(node)).uci()
@@ -54,7 +54,9 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
         else:
             curr_side = "W"
         if print_updates:
-            print(board)
+            print()
+            utils.pretty_print_board(board)
+            print()
     game_outcome = board.outcome()
     game_termination = game_outcome.termination.name
     if print_output:
@@ -72,6 +74,6 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
 
 def main():
     # host_game(white="alpha_beta_ai", black="alpha_beta_ai")
-    host_game(white="mcts_ai", black="random_ai")
+    host_game(white="alpha_beta_ai", black="alpha_beta_ai")
 if __name__ == "__main__":
     main()

@@ -3,6 +3,7 @@ import host_chess_game
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+from tqdm import tqdm
 
 INITIAL_ELO = 1200
 K = 32 # for weaker players, 16 for masters
@@ -10,7 +11,7 @@ K = 32 # for weaker players, 16 for masters
 def simulate_many_games(white, black, num_games=10):
     elo_W = [INITIAL_ELO]
     elo_B = [INITIAL_ELO]
-    for game_num in range(num_games):
+    for game_num in tqdm(range(num_games)):
         exp_result_W = 1./(1+10**((elo_B[-1] - elo_W[-1])/400.))
         exp_result_B = 1./(1+10**((elo_W[-1] - elo_B[-1])/400.))
         result = host_chess_game.host_game(white=white, black=black, print_updates=False, print_output=False)
@@ -29,20 +30,20 @@ def simulate_many_games(white, black, num_games=10):
     print(elo_B[-1])
 
     fig  = plt.figure()
-    plt.plot(np.arange(num_games+1), elo_W, label="elo_W")
-    plt.plot(np.arange(num_games+1), elo_B, label="elo_B")
+    plt.plot(np.arange(num_games+1), elo_W, label="absearch2_W")
+    plt.plot(np.arange(num_games+1), elo_B, label="absearch3_B")
     plt.xlabel("Game Number")
     plt.ylabel("Elo Score")
     plt.legend()
 
     plt.show()
-    #fig.savefig("elo_scores.png", bbox_inches = 'tight', facecolor="white")
+    fig.savefig("elo_scores.png", bbox_inches = 'tight', facecolor="white")
 
 
 
 def main():
     start = datetime.now()
-    simulate_many_games("random_ai", "random_ai", num_games=50)
+    simulate_many_games("alpha_beta_ai", "alpha_beta_ai", num_games=50)
     end = datetime.now()
     print("Total time:", end-start)
 

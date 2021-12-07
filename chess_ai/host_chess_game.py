@@ -10,6 +10,7 @@ from mcts_ai import mcts
 from node import Node
 import copy
 import utils
+from tqdm import tqdm
 
 DEPTH = {"W": 2, "B": 3}
 
@@ -19,7 +20,7 @@ def setup_board(initial_setup=""):
         return chess.Board()
     return chess.Board(initial_setup)
 
-def host_game(initial_setup="", white="human", black="human", print_updates=True, print_output=True):
+def host_game(initial_setup="", white="human", black="human", kriegspiel=False, print_updates=True, print_output=True):
     rng = np.random.default_rng()
     board = setup_board(initial_setup)
     curr_side = "W"
@@ -27,20 +28,60 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
         curr_move = -1
         count = 0
         while curr_move == -1 or not chess.Move.from_uci(curr_move) in board.legal_moves:
-            if count > 0:
+            if count > 0 and print_updates:
                 print("Invalid move, try again.")
             if (curr_side == "W" and white == "human") or (curr_side == "B" and black == "human"):
                 curr_move = input(curr_side + ", make a move: ")
             else:
                 if (curr_side == "W" and white == "random_ai") or (curr_side == "B" and black == "random_ai"):
-                    possible_moves = list(board.legal_moves)
-                    move_idx = rng.choice(len(possible_moves))
-                    curr_move = possible_moves[move_idx].uci()
+                    if count == 0:
+                        node = Node(board_state=copy.deepcopy(board), kriegspiel=kriegspiel)
+                    if kriegspiel:
+                        node.remove_opponent_pieces(curr_side)
+                    if node.possible_moves == [] and kriegspiel:
+                        node.get_diag_pawn_moves(curr_side)
+                        node.possible_moves = list(node.board_state.legal_moves) + node.diag_pawn_moves
+
+                    elif node.possible_moves == -1:
+                        print("problem 1 found")
+                        intersection = list(set(board.legal_moves) & set(list(node.board_state.legal_moves)+node.diag_pawn_moves))
+                        print(intersection)
+
+                    elif not kriegspiel:
+                        node.possible_moves = list(node.board_state.legal_moves)
+
+                    if node.possible_moves == -1:
+                        print("hi")
+                    move_idx = rng.choice(len(node.possible_moves))
+                    curr_move = node.possible_moves[move_idx].uci()
+                    node.possible_moves.remove(node.possible_moves[move_idx])
+
+                    if node.possible_moves == []:
+                        node.possible_moves = -1
+
                 elif (curr_side == "W" and white == "alpha_beta_ai") or (curr_side == "B" and black == "alpha_beta_ai"):
-                    node = Node(board_state=copy.deepcopy(board))
-                    value, curr_move = depth_limited_ab_search(node, DEPTH[curr_side], -np.infty, np.infty, True, curr_side)
+                    if count == 0:
+                        node = Node(board_state=copy.deepcopy(board), kriegspiel=kriegspiel)
+                        if list(set(node.board_state.legal_moves) & set(board.legal_moves)) == []:
+                            print("problem 2")
+                    if kriegspiel:
+                        node.remove_opponent_pieces(curr_side)
+                        node.update_opponent_pieces(curr_side, board)
+                    if count == 0:
+                        value, curr_move = depth_limited_ab_search(node, DEPTH[curr_side], -np.infty, np.infty, True, curr_side)
+                        if len(curr_move) == 0:
+                            print("uh oh 2")
+                    else:
+                        value, curr_move = node.get_nth_best_move(count, curr_side)
+                        if len(curr_move) == 0:
+                            print("uh oh 3")
+
+
                 elif (curr_side == "W" and white == "mcts_ai") or (curr_side == "B" and black == "mcts_ai"):
-                    node = Node(board_state=copy.deepcopy(board))
+                    node = Node(board_state=copy.deepcopy(board), kriegspiel=kriegspiel)
+                    if kriegspiel:
+                        node.remove_opponent_pieces(curr_side)
+                        node.update_opponent_pieces(curr_side, board)
                     curr_move = board.parse_san(mcts(node)).uci()
                 else:
                     print("Invalid AI type")
@@ -57,6 +98,8 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
             print()
             utils.pretty_print_board(board)
             print()
+        # if board.fullmove_number > 10:
+        #     break
     game_outcome = board.outcome()
     game_termination = game_outcome.termination.name
     if print_output:
@@ -74,6 +117,7 @@ def host_game(initial_setup="", white="human", black="human", print_updates=True
 
 def main():
     # host_game(white="alpha_beta_ai", black="random_ai")
-    host_game(white="mcts_ai", black="random_ai")
+    for i in tqdm(range(100)):
+        host_game(white="random_ai", black="alpha_beta_ai", kriegspiel=True,print_updates=False, print_output=False)
 if __name__ == "__main__":
     main()

@@ -5,7 +5,7 @@ import utils
 PIECE_VALUES = {"p": 1, "b": 3, "n": 3, "r": 5, "q": 9, "k": 0}
 
 
-def get_material_value(board_state, curr_player, weight=1): # how much to weight this heuristic
+def get_material_value(board_state, curr_player, kriegspiel=False, opponent_pieces=None, weight=1): # how much to weight this heuristic
     board_array = utils.get_board_state_array(board_state)
     white_points = 0
     black_points = 0
@@ -17,6 +17,12 @@ def get_material_value(board_state, curr_player, weight=1): # how much to weight
                 white_points += PIECE_VALUES[board_array[row][col].lower()]
             else:
                 black_points += PIECE_VALUES[board_array[row][col]]
+    if kriegspiel:
+        for piece in opponent_pieces:
+            if curr_player == "W":
+                black_points += PIECE_VALUES[piece] * opponent_pieces[piece]
+            else:
+                white_points += PIECE_VALUES[piece] * opponent_pieces[piece]
     if curr_player == "W":
         return (white_points - black_points) * weight
     return (black_points - white_points) * weight

@@ -15,14 +15,24 @@ def depth_limited_ab_search(node, depth, alpha, beta, maximizing_player, curr_pl
     """
     if depth == 0 or node.board_state.is_game_over():
         node.get_heuristic(curr_player)
-        return node.v, node.move
+        if node.move != "":
+            return node.v, node.move
     if node.children == set():
         for next_move in list(node.board_state.legal_moves):
             new_board_state = copy.deepcopy(node.board_state)
+            # new_gt_board_state = copy.deepcopy(node.gt_board_state)
+            # if next_move not in new_gt_board_state.legal_moves:
+            #     continue
             next_move = next_move.uci()
             new_board_state.push_san(next_move)
-            child_node = Node(board_state=new_board_state, move=next_move, parent=node)
+            # new_gt_board_state.push_san(next_move)
+            child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, opponent_pieces=node.opponent_pieces)
+            # child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, gt_board_state=node.gt_board_state)
+            # child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
             node.children.add(child_node)
+        if node.kriegspiel:
+            node.get_diag_pawn_moves(curr_player)
+
     if maximizing_player:
         value = -np.infty
         move = -1

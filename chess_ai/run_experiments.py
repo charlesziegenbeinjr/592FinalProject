@@ -30,8 +30,8 @@ def simulate_many_games(white, black, kriegspiel=False, num_games=10):
     print(elo_B[-1])
 
     fig  = plt.figure()
-    plt.plot(np.arange(num_games+1), elo_W, label="absearch2_W")
-    plt.plot(np.arange(num_games+1), elo_B, label="absearch3_B")
+    plt.plot(np.arange(num_games+1), elo_W, label="random_W")
+    plt.plot(np.arange(num_games+1), elo_B, label="absearch_B")
     plt.xlabel("Game Number")
     plt.ylabel("Elo Score")
     plt.legend()
@@ -43,7 +43,7 @@ def simulate_many_games(white, black, kriegspiel=False, num_games=10):
 
 def main():
     start = datetime.now()
-    simulate_many_games("random_ai", "alpha_beta_ai", kriegspiel=True, num_games=100)
+    simulate_many_games("random_ai", "alpha_beta_ai", kriegspiel=True, num_games=50)
     end = datetime.now()
     print("Total time:", end-start)
 

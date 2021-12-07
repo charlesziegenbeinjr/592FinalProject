@@ -23,11 +23,11 @@ class Node:
         self.gt_board_state = gt_board_state
 
     def get_heuristic(self, curr_player):
-        self.v = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces)
+        self.v = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces) # FIXME
 
         # eventually will call multiple heuristic functions
+
     def remove_opponent_pieces(self, curr_player):
-        #print(curr_player)
         board_array = utils.get_board_state_array(self.board_state)
         cols = chess.FILE_NAMES
         for row in range(8):
@@ -37,16 +37,9 @@ class Node:
                 elif (board_array[row][col].isupper() and curr_player=="B") or \
                      (board_array[row][col].islower() and curr_player=="W"): # current player is black and want to remove white pieces
                     self.board_state.remove_piece_at(8*(7-row)+col)
-        #print(self.board_state)
-
-        # print(chess.squ)
-        # remove_piece_at()
-        #
-        # .symbol()
 
     def get_diag_pawn_moves(self, curr_player):
         board_array = utils.get_board_state_array(self.board_state)
-        #print(chess.FILE_NAMES)
         for row in range(8):
             for col in range(8):
                 curr_pos = chess.FILE_NAMES[col] + str(8-row)
@@ -55,20 +48,16 @@ class Node:
                 elif board_array[row][col] == "P" and curr_player == "W":
                     if (row - 1) >= 0 and (col - 1) >= 0:
                         diag_move = curr_pos + chess.FILE_NAMES[col-1] + str(8 - (row - 1))
-                        #print(curr_player, diag_move)
                         self.diag_pawn_moves.append(chess.Move.from_uci(diag_move))
                     if (row - 1) >= 0 and (col + 1) <= 7:
                         diag_move = curr_pos + chess.FILE_NAMES[col+1] + str(8 - (row - 1))
-                        #print(curr_player, diag_move)
                         self.diag_pawn_moves.append(chess.Move.from_uci(diag_move))
                 elif board_array[row][col] == "p" and curr_player == "B":
                     if (row + 1) <= 7 and (col - 1) >= 0:
                         diag_move = curr_pos + chess.FILE_NAMES[col-1] + str(8 - (row + 1))
-                        #print(curr_player, diag_move)
                         self.diag_pawn_moves.append(chess.Move.from_uci(diag_move))
                     if (row + 1) <= 7 and (col + 1) <= 7:
                         diag_move = curr_pos + chess.FILE_NAMES[col+1] + str(8 - (row + 1))
-                        #print(curr_player, diag_move)
                         self.diag_pawn_moves.append(chess.Move.from_uci(diag_move))
         # for next_move in self.diag_pawn_moves:
         #     new_board_state = copy.deepcopy(self.board_state)
@@ -93,6 +82,9 @@ class Node:
                 new_gt_board_state.push_san(next_move)
                 child_node = Node(board_state=new_board_state, move=next_move, parent=self, kriegspiel=self.kriegspiel, gt_board_state=new_gt_board_state)
                 child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
+                print(child_node.board_state)
+                print(child_node.gt_board_state)
+                print(child_node.opponent_pieces)
                 self.children.add(child_node)
             if self.kriegspiel:
                 self.get_diag_pawn_moves(curr_player)

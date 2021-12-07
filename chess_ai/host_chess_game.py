@@ -11,8 +11,9 @@ from node import Node
 import copy
 import utils
 from tqdm import tqdm
+from datetime import datetime
 
-DEPTH = {"W": 2, "B": 3}
+DEPTH = {"W": 2, "B": 2}
 
 
 def setup_board(initial_setup=""):
@@ -61,14 +62,17 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
 
                 elif (curr_side == "W" and white == "alpha_beta_ai") or (curr_side == "B" and black == "alpha_beta_ai"):
                     if count == 0:
-                        node = Node(board_state=copy.deepcopy(board), kriegspiel=kriegspiel)
+                        node = Node(board_state=copy.deepcopy(board), kriegspiel=kriegspiel, gt_board_state=copy.deepcopy(board))
                         if list(set(node.board_state.legal_moves) & set(board.legal_moves)) == []:
                             print("problem 2")
                     if kriegspiel:
-                        node.remove_opponent_pieces(curr_side)
-                        node.update_opponent_pieces(curr_side, board)
+                        pass
+                        #node.remove_opponent_pieces(curr_side)
+                        #node.update_opponent_pieces(curr_side, board)
                     if count == 0:
                         value, curr_move = depth_limited_ab_search(node, DEPTH[curr_side], -np.infty, np.infty, True, curr_side)
+                        if type(curr_move) == type(0):
+                            print("uh oh 1", curr_move)
                         if len(curr_move) == 0:
                             print("uh oh 2")
                     else:
@@ -78,7 +82,7 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
 
 
                 elif (curr_side == "W" and white == "mcts_ai") or (curr_side == "B" and black == "mcts_ai"):
-                    node = Node(board_state=copy.deepcopy(board), kriegspiel=kriegspiel)
+                    node = Node(board_state=copy.deepcopy(board), kriegspiel=kriegspiel, gt_board_state=copy.deepcopy(board))
                     if kriegspiel:
                         node.remove_opponent_pieces(curr_side)
                         node.update_opponent_pieces(curr_side, board)
@@ -117,7 +121,10 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
 
 def main():
     # host_game(white="alpha_beta_ai", black="random_ai")
-    for i in tqdm(range(100)):
-        host_game(white="random_ai", black="alpha_beta_ai", kriegspiel=True,print_updates=False, print_output=False)
+    start = datetime.now()
+    for i in tqdm(range(50)):
+        host_game(white="alpha_beta_ai", black="random_ai", kriegspiel=True,print_updates=False, print_output=True)
+    end = datetime.now()
+    print("Total time:", end-start)
 if __name__ == "__main__":
     main()

@@ -66,9 +66,8 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
                         if list(set(node.board_state.legal_moves) & set(board.legal_moves)) == []:
                             print("problem 2")
                     if kriegspiel:
-                        pass
-                        #node.remove_opponent_pieces(curr_side)
-                        #node.update_opponent_pieces(curr_side, board)
+                        node.remove_opponent_pieces(curr_side)
+                        node.update_opponent_pieces(curr_side, board)
                     if count == 0:
                         value, curr_move = depth_limited_ab_search(node, DEPTH[curr_side], -np.infty, np.infty, True, curr_side)
                         if type(curr_move) == type(0):

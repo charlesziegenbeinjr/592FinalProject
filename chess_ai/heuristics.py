@@ -9,21 +9,29 @@ def get_material_value(board_state, curr_player, kriegspiel=False, opponent_piec
     board_array = utils.get_board_state_array(board_state)
     white_points = 0
     black_points = 0
+
     for row in range(8):
         for col in range(8):
             if board_array[row][col] == ".":
                 continue
-            elif board_array[row][col].isupper():
-                white_points += PIECE_VALUES[board_array[row][col].lower()]
+            elif kriegspiel:
+                if board_array[row][col].isupper() and curr_player == "W":
+                    white_points += PIECE_VALUES[board_array[row][col].lower()]
+                elif board_array[row][col].islower() and curr_player == "B":
+                    black_points += PIECE_VALUES[board_array[row][col]]
             else:
-                black_points += PIECE_VALUES[board_array[row][col]]
-    # if kriegspiel:
-    #     for piece in opponent_pieces:
-    #         if curr_player == "W":
-    #             black_points += PIECE_VALUES[piece] * opponent_pieces[piece]
-    #         else:
-    #             white_points += PIECE_VALUES[piece] * opponent_pieces[piece]
-    #print(white_points, black_points)
+                if board_array[row][col].isupper():
+                    white_points += PIECE_VALUES[board_array[row][col].lower()]
+                elif board_array[row][col].islower():
+                    black_points += PIECE_VALUES[board_array[row][col]]
+    # black_pts = 0
+    # kriegspiel_white_pts = 0
+    if kriegspiel:
+        for piece in opponent_pieces:
+            if curr_player == "W":
+                black_points += PIECE_VALUES[piece] * opponent_pieces[piece]
+            else:
+                white_points += PIECE_VALUES[piece] * opponent_pieces[piece]
     if curr_player == "W":
         return (white_points - black_points) * weight
     return (black_points - white_points) * weight

@@ -20,18 +20,18 @@ def depth_limited_ab_search(node, depth, alpha, beta, maximizing_player, curr_pl
     if node.children == set():
         for next_move in list(node.board_state.legal_moves):
             new_board_state = copy.deepcopy(node.board_state)
-            # if node.kriegspiel:
-            #     new_gt_board_state = copy.deepcopy(node.gt_board_state)
-            #     if next_move not in new_gt_board_state.legal_moves:
-            #         continue
+            if node.kriegspiel:
+                new_gt_board_state = copy.deepcopy(node.gt_board_state)
+                if next_move not in new_gt_board_state.legal_moves:
+                    continue
             next_move = next_move.uci()
             new_board_state.push_san(next_move)
-            #new_gt_board_state.push_san(next_move)
-            child_node = Node(board_state=new_board_state, move=next_move, parent=node)
+            new_gt_board_state.push_san(next_move)
+            child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, gt_board_state=new_gt_board_state)
             #child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, opponent_pieces=node.opponent_pieces)
             #child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, gt_board_state=node.gt_board_state)
             # child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, gt_board_state=node.gt_board_state)
-            #child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
+            child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
             # print(child_node.board_state)
             # print()
             # print(child_node.gt_board_state)

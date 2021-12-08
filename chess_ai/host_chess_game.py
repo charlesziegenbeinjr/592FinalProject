@@ -70,10 +70,6 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
                         node.update_opponent_pieces(curr_side, board)
                     if count == 0:
                         value, curr_move = depth_limited_ab_search(node, DEPTH[curr_side], -np.infty, np.infty, True, curr_side)
-                        if type(curr_move) == type(0):
-                            print("uh oh 1", curr_move)
-                        if len(curr_move) == 0:
-                            print("uh oh 2")
                     else:
                         value, curr_move = node.get_nth_best_move(count, curr_side)
                         if len(curr_move) == 0:
@@ -126,8 +122,8 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
 def main():
     # host_game(white="alpha_beta_ai", black="random_ai")
     start = datetime.now()
-    for i in tqdm(range(50)):
-        host_game(white="alpha_beta_ai", black="random_ai", kriegspiel=False,print_updates=False, print_output=True)
+    for i in tqdm(range(1)):
+        host_game(white="mcts_ai", black="random_ai", kriegspiel=False,print_updates=False, print_output=True)
     end = datetime.now()
     print("Total time:", end-start)
 if __name__ == "__main__":

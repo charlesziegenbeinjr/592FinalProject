@@ -27,10 +27,10 @@ class Node:
         if self.kriegspiel:
             val = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces)
         else:
-            val = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces) + \
+            val = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces) - \
                      heuristics.count_attacks(self.board_state, curr_player)
         if update_v:
-            self.v += val
+            self.v = val
         return val
 
 

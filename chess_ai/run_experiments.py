@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from tqdm import tqdm
+from os import listdir
 
 INITIAL_ELO = 1200
 K = 32 # for weaker players, 16 for masters
@@ -31,6 +32,42 @@ def simulate_many_games(white, black, kriegspiel=False, num_games=10, num_runs=1
             elo_B.append(elo_B[-1] + K * (s_b - exp_result_B))
         total_runs_W.append(elo_W)
         total_runs_B.append(elo_B)
+        rng = np.random.default_rng()
+        np.savez("results" + str(rng.integers(10000000)) + ".npz", elo_W=np.array(elo_W), elo_B=np.array(elo_B))
+    total_runs_W = np.array(total_runs_W)
+    total_runs_B = np.array(total_runs_B)
+
+    avg_per_game_W = np.average(total_runs_W, axis=0)
+    avg_per_game_B = np.average(total_runs_B, axis=0)
+    std_per_game_W = np.std(total_runs_W, axis=0)
+    std_per_game_B = np.std(total_runs_W, axis=0)
+
+    colors = ["tab:blue", "tab:orange", "tab:green"]
+    light_colors = ["lightblue", "peachpuff", "honeydew"]
+
+    fig  = plt.figure()
+    plt.plot(np.arange(num_games+1), avg_per_game_W, label="absearch_W", c=colors[0])
+    plt.plot(np.arange(num_games+1), avg_per_game_B, label="random_B", c=colors[1])
+    plt.fill_between(np.arange(num_games+1), avg_per_game_W, avg_per_game_W+std_per_game_W, where=avg_per_game_W+std_per_game_W>=avg_per_game_W,facecolor=light_colors[0])
+    plt.fill_between(np.arange(num_games+1), avg_per_game_W, avg_per_game_W-std_per_game_W, where=avg_per_game_W-std_per_game_W<=avg_per_game_W, facecolor=light_colors[0])
+    plt.fill_between(np.arange(num_games+1), avg_per_game_B, avg_per_game_B+std_per_game_B, where=avg_per_game_B+std_per_game_B>=avg_per_game_B,facecolor=light_colors[1])
+    plt.fill_between(np.arange(num_games+1), avg_per_game_B, avg_per_game_B-std_per_game_B, where=avg_per_game_B-std_per_game_B<=avg_per_game_B, facecolor=light_colors[1])
+    plt.xlabel("Game Number")
+    plt.ylabel("Average Elo Score")
+    plt.legend()
+
+    plt.show()
+    fig.savefig("elo_scores.png", bbox_inches = 'tight', facecolor="white")
+
+def make_kriegspiel_absearch_plot():
+    num_games=100
+    total_runs_W = []
+    total_runs_B = []
+    for filename in listdir("."):
+        if filename[-1] == "z":
+            data = np.load(filename)
+            total_runs_W.append(data["elo_W"])
+            total_runs_B.append(data["elo_B"])
     total_runs_W = np.array(total_runs_W)
     total_runs_B = np.array(total_runs_B)
 
@@ -60,9 +97,13 @@ def simulate_many_games(white, black, kriegspiel=False, num_games=10, num_runs=1
 
 def main():
     start = datetime.now()
-    simulate_many_games("alpha_beta_ai", "random_ai", kriegspiel=False, num_games=100, num_runs=10)
+    simulate_many_games("alpha_beta_ai", "random_ai", kriegspiel=True, num_games=100, num_runs=10)
     end = datetime.now()
     print("Total time:", end-start)
+    #make_kriegspiel_absearch_plot()
+
+
+
 
 
 

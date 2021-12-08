@@ -80,7 +80,7 @@ def make_kriegspiel_absearch_plot():
     light_colors = ["lightblue", "peachpuff", "honeydew"]
 
     fig  = plt.figure()
-    plt.plot(np.arange(num_games+1), avg_per_game_W, label="absearch_W", c=colors[0])
+    plt.plot(np.arange(num_games+1), avg_per_game_W, label="mcts_W", c=colors[0])
     plt.plot(np.arange(num_games+1), avg_per_game_B, label="random_B", c=colors[1])
     plt.fill_between(np.arange(num_games+1), avg_per_game_W, avg_per_game_W+std_per_game_W, where=avg_per_game_W+std_per_game_W>=avg_per_game_W,facecolor=light_colors[0])
     plt.fill_between(np.arange(num_games+1), avg_per_game_W, avg_per_game_W-std_per_game_W, where=avg_per_game_W-std_per_game_W<=avg_per_game_W, facecolor=light_colors[0])
@@ -97,7 +97,7 @@ def make_kriegspiel_absearch_plot():
 
 def main():
     start = datetime.now()
-    simulate_many_games("alpha_beta_ai", "random_ai", kriegspiel=True, num_games=100, num_runs=10)
+    simulate_many_games("mcts_ai", "random_ai", kriegspiel=False, num_games=5, num_runs=2)
     end = datetime.now()
     print("Total time:", end-start)
     #make_kriegspiel_absearch_plot()

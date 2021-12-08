@@ -3,7 +3,7 @@ from node import Node
 import numpy as np
 import random
 import sys
-
+import heuristics
 
 def ucb1(currentNode):
     return currentNode.v + np.sqrt(2) * \
@@ -11,25 +11,25 @@ def ucb1(currentNode):
 
 
 def selection(currentNode,player, threshold): #SELECTION
-    if player == "white":
-        selection = None
-        ucb_value = threshold
-        for child in currentNode.children:
-            child_ucb = ucb1(child)
-            if child_ucb > ucb_value:
-                ucb_value = child_ucb
-                selection = child
+    # if player == "white":
+    selection = None
+    ucb_value = -np.infty
+    for child in currentNode.children:
+        child_ucb = ucb1(child)
+        if child_ucb > ucb_value:
+            ucb_value = child_ucb
+            selection = child
         return selection
-    
-    if player == "black":
-        selection = None
-        ucb_value = threshold
-        for child in currentNode.children:
-            child_ucb = ucb1(child)
-            if child_ucb < ucb_value:
-                ucb_value = child_ucb
-                selection = child
-        return selection
+
+    # if player == "black":
+    #     selection = None
+    #     ucb_value = threshold
+    #     for child in currentNode.children:
+    #         child_ucb = ucb1(child)
+    #         if child_ucb < ucb_value:
+    #             ucb_value = child_ucb
+    #             selection = child
+    #     return selection
 
 
 def expansion(currentNode, player): #EXPANSION
@@ -43,7 +43,8 @@ def expansion(currentNode, player): #EXPANSION
         return (expansion(descendant, "white"))
 
 
-def playout(currentNode): #ROLLOUT
+def playout(currentNode, depth): #ROLLOUT
+    #print(depth)
     if currentNode.board_state.is_game_over():
         chessboard = currentNode.board_state
         if chessboard.result() == "1-0":
@@ -52,19 +53,44 @@ def playout(currentNode): #ROLLOUT
             return (currentNode,0)
         else:
             return (currentNode,0.5)
+    elif depth == 0:
+        val = currentNode.get_heuristic("W", update_v=False)
+        #print(val)
+        if val > 0:
+            return (currentNode, 1)
+        elif val < 0:
+            return (currentNode, 0)
+        else:
+            return (currentNode, 0.5)
+
 
 
     legalMoves = list(currentNode.board_state.legal_moves)
     possibleMoves = [currentNode.board_state.san(i) for i in legalMoves]
+    values = []
     for i in possibleMoves:
         # Get FEN Notation of Board
-        state = chess.Board(currentNode.board_state.fen())
-        state.push_san(i)  # Push Move onto Move Stack
         descendant = Node()
+        state = chess.Board(currentNode.board_state.fen())
+        #val = heuristics.opponent_check(state, i, "W")
+        state.push_san(i)  # Push Move onto Move Stack
+
         descendant.board_state = state
         descendant.parent = currentNode
         currentNode.children.add(descendant)
-    return playout(random.choice(list(currentNode.children)))
+        val = descendant.get_heuristic("W", update_v=False)
+        #print(temp)
+        values.append(val+1) # to ensure no /0
+    values = np.array(values, dtype="float64")
+    #print(values)
+    if np.amin(values) < 0:
+        values += -1*np.amin(values)
+    rng = np.random.default_rng()
+    if np.sum(values) == 0:
+        return playout(random.choice(list(currentNode.children)), depth-1)
+    values /= np.sum(values)
+    return playout(rng.choice(list(currentNode.children), p=values), depth-1)
+    #
 
 
 def backpropagate(currentNode, result): #BACKPROPAGATE
@@ -90,11 +116,11 @@ def mcts(currentNode):
         currentNode.children.add(descendant)
         move_map[descendant] = i
 
-    sims = 20  # I.E "Until We Run Out of Time..."
+    sims = 50  # I.E "Until We Run Out of Time..."
     while (sims > 0):
         child = selection(currentNode, "white", -np.infty)
         leaf = expansion(child, "white")
-        finalNode, reward = playout(leaf)
+        finalNode, reward = playout(leaf, 10)
         currentNode = backpropagate(finalNode, reward)
         sims -= 1
 

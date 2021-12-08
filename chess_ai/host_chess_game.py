@@ -123,7 +123,7 @@ def main():
     # host_game(white="alpha_beta_ai", black="random_ai")
     start = datetime.now()
     for i in tqdm(range(1)):
-        host_game(white="mcts_ai", black="random_ai", kriegspiel=False,print_updates=False, print_output=True)
+        host_game(white="mcts_ai", black="random_ai", kriegspiel=False,print_updates=True, print_output=True)
     end = datetime.now()
     print("Total time:", end-start)
 if __name__ == "__main__":

@@ -61,6 +61,8 @@ def count_attacks(board_state, curr_player):
 def opponent_check(board_state, move, curr_player):
     if board_state.gives_check(chess.Move.from_uci(move)):
         return 100
+    else:
+        return 0
 
 
 

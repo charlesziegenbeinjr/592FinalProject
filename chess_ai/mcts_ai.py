@@ -102,7 +102,7 @@ def backpropagate(currentNode, result): #BACKPROPAGATE
     return currentNode
 
 
-def mcts(currentNode):
+def mcts(currentNode, kriegspiel):
     legalMoves = list(currentNode.board_state.legal_moves)
     possibleMoves = [currentNode.board_state.san(i) for i in legalMoves]
     move_map = dict()

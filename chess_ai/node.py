@@ -22,10 +22,17 @@ class Node:
         self.opponent_pieces = opponent_pieces
         self.gt_board_state = gt_board_state
 
-    def get_heuristic(self, curr_player):
-        self.v = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces) # FIXME
+    def get_heuristic(self, curr_player, update_v=True):
+        val = 0
+        if self.kriegspiel:
+            val = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces)
+        else:
+            val = heuristics.get_material_value(self.board_state, curr_player, self.kriegspiel, self.opponent_pieces) + \
+                     heuristics.count_attacks(self.board_state, curr_player)
+        if update_v:
+            self.v += val
+        return val
 
-        # eventually will call multiple heuristic functions
 
     def remove_opponent_pieces(self, curr_player):
         board_array = utils.get_board_state_array(self.board_state)
@@ -59,32 +66,26 @@ class Node:
                     if (row + 1) <= 7 and (col + 1) <= 7:
                         diag_move = curr_pos + chess.FILE_NAMES[col+1] + str(8 - (row + 1))
                         self.diag_pawn_moves.append(chess.Move.from_uci(diag_move))
-        # for next_move in self.diag_pawn_moves:
-        #     new_board_state = copy.deepcopy(self.board_state)
-        #     next_move = next_move.uci()
-        #     new_board_state.push_san(next_move)
-        #     child_node = Node(board_state=new_board_state, move=next_move, parent=self, kriegspiel=self.kriegspiel)
-        #     self.children.add(child_node)
-
-
-
 
     def get_nth_best_move(self, n, curr_player):
         if self.children == set():
-            print("here")
             for next_move in list(self.board_state.legal_moves):
                 new_board_state = copy.deepcopy(self.board_state)
-                new_gt_board_state = copy.deepcopy(self.gt_board_state)
-                if next_move not in new_gt_board_state.legal_moves:
-                    continue
+                if self.kriegspiel:
+                    new_gt_board_state = copy.deepcopy(self.gt_board_state)
+                    if next_move not in new_gt_board_state.legal_moves:
+                        continue
+                else:
+                    new_gt_board_state = None
                 next_move = next_move.uci()
                 new_board_state.push_san(next_move)
-                new_gt_board_state.push_san(next_move)
+                if self.kriegspiel:
+                    new_gt_board_state.push_san(next_move)
                 child_node = Node(board_state=new_board_state, move=next_move, parent=self, kriegspiel=self.kriegspiel, gt_board_state=new_gt_board_state)
-                child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
-                print(child_node.board_state)
-                print(child_node.gt_board_state)
-                print(child_node.opponent_pieces)
+                if node.kriegspiel:
+                    child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
+                else:
+                    child_node.v = heuristics.opponent_check(node.board_state, child_node.move, curr_player)
                 self.children.add(child_node)
             if self.kriegspiel:
                 self.get_diag_pawn_moves(curr_player)

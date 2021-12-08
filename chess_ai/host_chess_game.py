@@ -85,7 +85,12 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
                     if kriegspiel:
                         node.remove_opponent_pieces(curr_side)
                         node.update_opponent_pieces(curr_side, board)
-                    curr_move = board.parse_san(mcts(node)).uci()
+                    try:
+                        curr_move = board.parse_san(mcts(node)).uci()
+                    except ValueError:
+                        value, curr_move = node.get_nth_best_move(count, curr_side)
+
+
                 else:
                     print("Invalid AI type")
                     return
@@ -122,7 +127,7 @@ def main():
     # host_game(white="alpha_beta_ai", black="random_ai")
     start = datetime.now()
     for i in tqdm(range(50)):
-        host_game(white="alpha_beta_ai", black="random_ai", kriegspiel=True,print_updates=False, print_output=True)
+        host_game(white="alpha_beta_ai", black="random_ai", kriegspiel=False,print_updates=False, print_output=True)
     end = datetime.now()
     print("Total time:", end-start)
 if __name__ == "__main__":

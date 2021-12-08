@@ -24,21 +24,19 @@ def depth_limited_ab_search(node, depth, alpha, beta, maximizing_player, curr_pl
                 new_gt_board_state = copy.deepcopy(node.gt_board_state)
                 if next_move not in new_gt_board_state.legal_moves:
                     continue
+            else:
+                new_gt_board_state = None
+
             next_move = next_move.uci()
             new_board_state.push_san(next_move)
-            new_gt_board_state.push_san(next_move)
+            if node.kriegspiel:
+                new_gt_board_state.push_san(next_move)
+
             child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, gt_board_state=new_gt_board_state)
-            #child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, opponent_pieces=node.opponent_pieces)
-            #child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, gt_board_state=node.gt_board_state)
-            # child_node = Node(board_state=new_board_state, move=next_move, parent=node, kriegspiel=node.kriegspiel, gt_board_state=node.gt_board_state)
-            child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
-            # print(child_node.board_state)
-            # print()
-            # print(child_node.gt_board_state)
-            # print(child_node.opponent_pieces)
-            # child_node.get_heuristic(curr_player)
-            # print(child_node.v)
-            #print(child_node.get_heuristic(curr_player))
+            if node.kriegspiel:
+                child_node.update_opponent_pieces(curr_player, child_node.gt_board_state)
+            else:
+                child_node.v = heuristics.opponent_check(node.board_state, child_node.move, curr_player)
             node.children.add(child_node)
         if node.kriegspiel:
             node.get_diag_pawn_moves(curr_player)

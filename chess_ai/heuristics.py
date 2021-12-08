@@ -43,6 +43,26 @@ def get_material_value(board_state, curr_player, kriegspiel=False, opponent_piec
 Want to use a lot of the information below to inform heuristic value
 """
 
+def count_attacks(board_state, curr_player):
+    board_array = utils.get_board_state_array(board_state)
+    num_pieces_attacked = 0
+    for row in range(8):
+        for col in range(8):
+            piece = board_array[row][col]
+            pos = 8*(7-row)+col
+            if board_array[row][col] == ".":
+                continue
+            if piece.isupper() and curr_player == "W" and board_state.is_attacked_by(chess.BLACK, pos):
+                num_pieces_attacked += 1
+            elif piece.islower() and curr_player == "B" and board_state.is_attacked_by(chess.WHITE, pos):
+                num_pieces_attacked += 1
+    return num_pieces_attacked
+
+def opponent_check(board_state, move, curr_player):
+    if board_state.gives_check(chess.Move.from_uci(move)):
+        return 100
+
+
 
 # def attacked(board_state, curr_player):
 #     board.is_check()
@@ -70,14 +90,3 @@ Want to use a lot of the information below to inform heuristic value
 # is_irreversible(move: chess.Move) → bool Checks if the given pseudo-legal move is irreversible.
 # In standard chess, pawn moves, captures, moves that destroy castling rights and moves that cede en passant are irreversible.
 # This method has false-negatives with forced lines. For example, a check that will force the king to lose castling rights is not considered irreversible. Only the actual king move is.
-
-
-# attacks(square: chess.Square) → chess.SquareSet
-# Gets the set of attacked squares from the given square.
-# There will be no attacks if the square is empty. Pinned pieces are still attacking other squares.
-# Returnsaset of squares.
-# is_attacked_by(color: chess.Color, square: chess.Square) → bool
-# Checks if the given side attacks the given square.
-# Pinned pieces still count as attackers. Pawns that can be captured en passant are not considered attacked. attackers(color: chess.Color, square: chess.Square) → chess.SquareSet
-# Gets the set of attackers of the given color for the given square. Pinned pieces still count as attackers.
-# Returnsaset of squares.

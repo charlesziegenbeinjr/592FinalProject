@@ -102,7 +102,7 @@ def backpropagate(currentNode, result): #BACKPROPAGATE
     return currentNode
 
 
-def mcts(currentNode, kriegspiel):
+def mcts(currentNode, kriegspiel=False):
     legalMoves = list(currentNode.board_state.legal_moves)
     possibleMoves = [currentNode.board_state.san(i) for i in legalMoves]
     move_map = dict()
@@ -116,7 +116,7 @@ def mcts(currentNode, kriegspiel):
         currentNode.children.add(descendant)
         move_map[descendant] = i
 
-    sims = 50  # I.E "Until We Run Out of Time..."
+    sims = 5  # I.E "Until We Run Out of Time..."
     while (sims > 0):
         child = selection(currentNode, "white", -np.infty)
         leaf = expansion(child, "white")

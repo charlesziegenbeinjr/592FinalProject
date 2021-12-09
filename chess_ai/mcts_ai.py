@@ -10,7 +10,7 @@ def ucb1(currentNode):
         (np.sqrt(np.log(currentNode.N + np.exp(1) + (10**-7)) / (currentNode.n + (10**-11))))
 
 
-def selection(currentNode,player, threshold): #SELECTION
+def selection(currentNode): #SELECTION
     # if player == "white":
     selection = None
     ucb_value = -np.infty
@@ -36,10 +36,10 @@ def expansion(currentNode, player): #EXPANSION
     if len(currentNode.children) == 0:
         return currentNode
     if player == "white":
-        descendant = selection(currentNode, "white", -np.infty)
+        descendant = selection(currentNode)
         return expansion(descendant, "black")
     if player == "black":
-        descendant = selection(currentNode, "black", np.infty)
+        descendant = selection(currentNode)
         return (expansion(descendant, "white"))
 
 
@@ -116,11 +116,11 @@ def mcts(currentNode, kriegspiel):
         currentNode.children.add(descendant)
         move_map[descendant] = i
 
-    sims = 50  # I.E "Until We Run Out of Time..."
+    sims = 10  # I.E "Until We Run Out of Time..."
     while (sims > 0):
-        child = selection(currentNode, "white", -np.infty)
-        leaf = expansion(child, "white")
-        finalNode, reward = playout(leaf, 10)
+        child = selection(currentNode)
+        leaf = expansion(child, "black")
+        finalNode, reward = playout(leaf, 15)
         currentNode = backpropagate(finalNode, reward)
         sims -= 1
 

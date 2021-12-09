@@ -82,7 +82,8 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
                         node.remove_opponent_pieces(curr_side)
                         node.update_opponent_pieces(curr_side, board)
                     try:
-                        curr_move = board.parse_san(mcts(node)).uci()
+                        query = mcts(node, kriegspiel)
+                        curr_move = board.parse_san(query).uci()
                     except ValueError:
                         value, curr_move = node.get_nth_best_move(count, curr_side)
 
@@ -123,7 +124,7 @@ def main():
     # host_game(white="alpha_beta_ai", black="random_ai")
     start = datetime.now()
     for i in tqdm(range(1)):
-        host_game(white="mcts_ai", black="random_ai", kriegspiel=False,print_updates=True, print_output=True)
+        host_game(white="mcts_ai", black="random_ai", kriegspiel=False,print_updates=False, print_output=True)
     end = datetime.now()
     print("Total time:", end-start)
 if __name__ == "__main__":

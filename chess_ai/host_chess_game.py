@@ -1,5 +1,7 @@
 """
 FIXME
+
+https://readthedocs.org/projects/python-chess/downloads/pdf/latest/
 """
 
 import chess

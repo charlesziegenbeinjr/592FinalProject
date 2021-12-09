@@ -60,7 +60,7 @@ def simulate_many_games(white, black, kriegspiel=False, num_games=10, num_runs=1
     fig.savefig("elo_scores.png", bbox_inches = 'tight', facecolor="white")
 
 def make_kriegspiel_absearch_plot():
-    num_games=100
+    num_games=50
     total_runs_W = []
     total_runs_B = []
     for filename in listdir("."):
@@ -96,11 +96,11 @@ def make_kriegspiel_absearch_plot():
 
 
 def main():
-    start = datetime.now()
-    simulate_many_games("mcts_ai", "random_ai", kriegspiel=False, num_games=5, num_runs=2)
-    end = datetime.now()
-    print("Total time:", end-start)
-    #make_kriegspiel_absearch_plot()
+    # start = datetime.now()
+    # simulate_many_games("mcts_ai", "random_ai", kriegspiel=False, num_games=50, num_runs=2)
+    # end = datetime.now()
+    # print("Total time:", end-start)
+    make_kriegspiel_absearch_plot()
 
 
 

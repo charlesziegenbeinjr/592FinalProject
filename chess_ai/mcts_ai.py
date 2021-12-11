@@ -4,6 +4,7 @@ import numpy as np
 import random
 import sys
 import heuristics
+from tqdm import tqdm
 
 def ucb1(currentNode):
     return currentNode.v + np.sqrt(2) * \
@@ -44,7 +45,6 @@ def expansion(currentNode, player): #EXPANSION
 
 
 def playout(currentNode, depth): #ROLLOUT
-    #print(depth)
     if currentNode.board_state.is_game_over():
         chessboard = currentNode.board_state
         if chessboard.result() == "1-0":
@@ -86,11 +86,12 @@ def playout(currentNode, depth): #ROLLOUT
     if np.amin(values) < 0:
         values += -1*np.amin(values)
     rng = np.random.default_rng()
-    if np.sum(values) == 0:
-        return playout(random.choice(list(currentNode.children)), depth-1)
-    values /= np.sum(values)
-    return playout(rng.choice(list(currentNode.children), p=values), depth-1)
-    #
+    return playout(random.choice(list(currentNode.children)), depth-1)
+    # if np.sum(values) == 0:
+    #     return playout(random.choice(list(currentNode.children)), depth-1)
+    # values /= np.sum(values)
+    # return playout(rng.choice(list(currentNode.children), p=values), depth-1)
+
 
 
 def backpropagate(currentNode, result): #BACKPROPAGATE
@@ -116,19 +117,21 @@ def mcts(currentNode, kriegspiel=False):
         currentNode.children.add(descendant)
         move_map[descendant] = i
 
-    sims = 5  # I.E "Until We Run Out of Time..."
-    while (sims > 0):
+    sims = 200  # I.E "Until We Run Out of Time..."
+    for sim_num in range(sims):
         child = selection(currentNode, "white", -np.infty)
         leaf = expansion(child, "white")
-        finalNode, reward = playout(leaf, 10)
+        finalNode, reward = playout(leaf, 0)
         currentNode = backpropagate(finalNode, reward)
-        sims -= 1
+        #sims -= 1
 
     move = ''
     ucb_value = -np.infty
     for child in currentNode.children:
         child_ucb = ucb1(child)
+        #child_ucb = child.n
         if child_ucb > ucb_value:
+            # choose one with highest n value
             ucb_value = child_ucb
             move = move_map[child]
     return move

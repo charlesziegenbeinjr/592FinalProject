@@ -11,7 +11,7 @@ def ucb1(currentNode):
         (np.sqrt(np.log(currentNode.N + np.exp(1) + (10**-7)) / (currentNode.n + (10**-11))))
 
 
-def selection(currentNode,player, threshold): #SELECTION
+def selection(currentNode): #SELECTION
     # if player == "white":
     selection = None
     ucb_value = -np.infty
@@ -37,10 +37,10 @@ def expansion(currentNode, player): #EXPANSION
     if len(currentNode.children) == 0:
         return currentNode
     if player == "white":
-        descendant = selection(currentNode, "white", -np.infty)
+        descendant = selection(currentNode)
         return expansion(descendant, "black")
     if player == "black":
-        descendant = selection(currentNode, "black", np.infty)
+        descendant = selection(currentNode)
         return (expansion(descendant, "white"))
 
 

@@ -84,7 +84,8 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
                         node.remove_opponent_pieces(curr_side)
                         node.update_opponent_pieces(curr_side, board)
                     try:
-                        curr_move = board.parse_san(mcts(node)).uci()
+                        query = mcts(node, kriegspiel)
+                        curr_move = board.parse_san(query).uci()
                     except ValueError:
                         value, curr_move = node.get_nth_best_move(count, curr_side)
 

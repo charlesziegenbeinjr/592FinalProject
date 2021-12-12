@@ -284,9 +284,17 @@ Functions:
     
 
     opponent_check:
-
         
+        If a move puts an opponent in check, incentivize the mode by providing it with a hgih reward.
 
+        Parameters:
+            - board_state - python-chess BoardState, the current status of the chessboard
+            - move - String, the move to be taken in UCI format
+            - curr_player - String, the current player "W" or "B"
+
+        Returns:
+            Returns the extra reward meant to incentivize putting the opponent king in check, either
+            100 (for check) or 0 (no check). 
 
 
 

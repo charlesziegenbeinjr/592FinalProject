@@ -58,37 +58,11 @@ def count_attacks(board_state, curr_player):
                 num_pieces_attacked += 1
     return num_pieces_attacked
 
+
+
+
 def opponent_check(board_state, move, curr_player):
     if board_state.gives_check(chess.Move.from_uci(move)):
         return 100
     else:
         return 0
-
-
-
-# def attacked(board_state, curr_player):
-#     board.is_check()
-#     attackers = board.attackers(chess.WHITE, chess.F3)
-
-
-
-# checkers() → chess.SquareSet
-# Gets the pieces currently giving check.
-# Returnsaset of squares. is_check() → bool
-# Tests if the current side to move is in check.
-# gives_check(move: chess.Move) → bool
-# Probes if the given move would put the opponent in check. The move must be at least pseudo-legal.
-
-# peek()
-# Gets the last move from the move stack.
-
-#
-# is_en_passant(move: chess.Move) → bool
-# Checks if the given pseudo-legal move is an en passant capture.
-# is_capture(move: chess.Move) → bool
-# Checks if the given pseudo-legal move is a capture.
-# is_zeroing(move: chess.Move) → bool
-# Checks if the given pseudo-legal move is a capture or pawn move.
-# is_irreversible(move: chess.Move) → bool Checks if the given pseudo-legal move is irreversible.
-# In standard chess, pawn moves, captures, moves that destroy castling rights and moves that cede en passant are irreversible.
-# This method has false-negatives with forced lines. For example, a check that will force the king to lose castling rights is not considered irreversible. Only the actual king move is.

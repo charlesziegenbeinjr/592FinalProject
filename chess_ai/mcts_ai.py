@@ -4,7 +4,6 @@ import numpy as np
 import random
 import sys
 import heuristics
-from tqdm import tqdm
 
 def ucb1(currentNode):
     return currentNode.v + np.sqrt(2) * \
@@ -21,16 +20,6 @@ def selection(currentNode): #SELECTION
             ucb_value = child_ucb
             selection = child
         return selection
-
-    # if player == "black":
-    #     selection = None
-    #     ucb_value = threshold
-    #     for child in currentNode.children:
-    #         child_ucb = ucb1(child)
-    #         if child_ucb < ucb_value:
-    #             ucb_value = child_ucb
-    #             selection = child
-    #     return selection
 
 
 def expansion(currentNode, player): #EXPANSION
@@ -55,7 +44,6 @@ def playout(currentNode, depth): #ROLLOUT
             return (currentNode,0.5)
     elif depth == 0:
         val = currentNode.get_heuristic("W", update_v=False)
-        #print(val)
         if val > 0:
             return (currentNode, 1)
         elif val < 0:
@@ -63,34 +51,25 @@ def playout(currentNode, depth): #ROLLOUT
         else:
             return (currentNode, 0.5)
 
-
-
     legalMoves = list(currentNode.board_state.legal_moves)
     possibleMoves = [currentNode.board_state.san(i) for i in legalMoves]
     values = []
     for i in possibleMoves:
-        # Get FEN Notation of Board
         descendant = Node()
         state = chess.Board(currentNode.board_state.fen())
-        #val = heuristics.opponent_check(state, i, "W")
-        state.push_san(i)  # Push Move onto Move Stack
+        state.push_san(i)
 
         descendant.board_state = state
         descendant.parent = currentNode
         currentNode.children.add(descendant)
         val = descendant.get_heuristic("W", update_v=False)
-        #print(temp)
-        values.append(val+1) # to ensure no /0
+        values.append(val+1)
     values = np.array(values, dtype="float64")
-    #print(values)
     if np.amin(values) < 0:
         values += -1*np.amin(values)
     rng = np.random.default_rng()
     return playout(random.choice(list(currentNode.children)), depth-1)
-    # if np.sum(values) == 0:
-    #     return playout(random.choice(list(currentNode.children)), depth-1)
-    # values /= np.sum(values)
-    # return playout(rng.choice(list(currentNode.children), p=values), depth-1)
+    
 
 
 
@@ -110,7 +89,7 @@ def mcts(currentNode, kriegspiel=False):
     for i in possibleMoves:
         # Get FEN Notation of Board
         state = chess.Board(currentNode.board_state.fen())
-        state.push_san(i)  # Push Move onto Move Stack
+        state.push_san(i) 
         descendant = Node()
         descendant.board_state = state
         descendant.parent = currentNode
@@ -123,15 +102,12 @@ def mcts(currentNode, kriegspiel=False):
         leaf = expansion(child, "white")
         finalNode, reward = playout(leaf, 0)
         currentNode = backpropagate(finalNode, reward)
-        #sims -= 1
 
     move = ''
     ucb_value = -np.infty
     for child in currentNode.children:
         child_ucb = ucb1(child)
-        #child_ucb = child.n
         if child_ucb > ucb_value:
-            # choose one with highest n value
             ucb_value = child_ucb
             move = move_map[child]
     return move

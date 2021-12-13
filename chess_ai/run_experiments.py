@@ -81,8 +81,8 @@ def make_plot(num_games):
     light_colors = ["lightblue", "peachpuff", "honeydew"]
 
     fig  = plt.figure()
-    plt.plot(np.arange(num_games+1), avg_per_game_W, label="mcts_W", c=colors[0])
-    plt.plot(np.arange(num_games+1), avg_per_game_B, label="random_B", c=colors[1])
+    plt.plot(np.arange(num_games+1), avg_per_game_W, label="alpha_beta_W_depth_3", c=colors[0])
+    plt.plot(np.arange(num_games+1), avg_per_game_B, label="alpha_beta_B_depth_2", c=colors[1])
     plt.fill_between(np.arange(num_games+1), avg_per_game_W, avg_per_game_W+std_per_game_W, where=avg_per_game_W+std_per_game_W>=avg_per_game_W,facecolor=light_colors[0])
     plt.fill_between(np.arange(num_games+1), avg_per_game_W, avg_per_game_W-std_per_game_W, where=avg_per_game_W-std_per_game_W<=avg_per_game_W, facecolor=light_colors[0])
     plt.fill_between(np.arange(num_games+1), avg_per_game_B, avg_per_game_B+std_per_game_B, where=avg_per_game_B+std_per_game_B>=avg_per_game_B,facecolor=light_colors[1])
@@ -98,7 +98,8 @@ def make_plot(num_games):
 
 def main():
     start = datetime.now()
-    simulate_many_games("mcts_ai", "random_ai", kriegspiel=False, num_games=50, num_runs=15)
+    simulate_many_games("alpha_beta_ai", "alpha_beta_ai",
+                        kriegspiel=False, num_games=100, num_runs=15)
     end = datetime.now()
     print("Total time:", end-start)
     #make_plot(50)

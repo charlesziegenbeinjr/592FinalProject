@@ -31,10 +31,6 @@ class Node:
                      heuristics.count_attacks(self.board_state, curr_player)
         if update_v:
             self.v += val
-            # if type(self.v) == type(1):
-            #     self.v += val
-            # else:
-            #     self.v = val
         return val
 
 
@@ -119,19 +115,12 @@ class Node:
             next_move = next_move.uci()
             return self.v, next_move
 
-            #
-            # return -1, -1
         else:
-            #print(n, len(self.sorted_children))
             selected_child = self.sorted_children.pop(-1)
             if self.sorted_children == []:
                 self.sorted_children = -1
-            #print(len(self.sorted_children))
             return selected_child.v, selected_child.move
 
-        # if n > len(children_lst):
-        #     return sorted_children[0].v, sorted_children[0].move
-        # return sorted_children[-n].v, sorted_children[-n].move
 
     def update_opponent_pieces(self, curr_player, full_board_state):
         self.opponent_pieces = {}
@@ -141,7 +130,7 @@ class Node:
                 if board_array[row][col] == ".":
                     continue
                 elif (board_array[row][col].isupper() and curr_player=="B") or \
-                     (board_array[row][col].islower() and curr_player=="W"): # current player is black and want to remove white pieces
+                     (board_array[row][col].islower() and curr_player=="W"): 
                     piece = board_array[row][col].lower()
                     if piece not in self.opponent_pieces:
                         self.opponent_pieces[piece] = 1

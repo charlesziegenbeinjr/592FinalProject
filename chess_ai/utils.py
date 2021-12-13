@@ -26,7 +26,6 @@ def pretty_print_board(board_state):
                     print(colored(board_array[row][col], "magenta"), end=" ")
                 else:
                     print(colored(board_array[row][col], "cyan"), end=" ")
-                # print(board_array[row][col], end=" ")
             else:
                 print(letters[col], end=" ")
 

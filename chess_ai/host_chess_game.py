@@ -105,8 +105,6 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
             print()
             utils.pretty_print_board(board)
             print()
-        # if board.fullmove_number > 10:
-        #     break
     game_outcome = board.outcome()
     game_termination = game_outcome.termination.name
     if print_output:
@@ -123,11 +121,11 @@ def host_game(initial_setup="", white="human", black="human", kriegspiel=False, 
 
 
 def main():
-    # host_game(white="alpha_beta_ai", black="random_ai")
     start = datetime.now()
-    for i in tqdm(range(10)):
-        host_game(white="mcts_ai", black="random_ai", kriegspiel=False,print_updates=False, print_output=True)
+    host_game(white="alpha_beta_ai", black="random_ai", kriegspiel=False,print_updates=False, print_output=True)
     end = datetime.now()
     print("Total time:", end-start)
+
+
 if __name__ == "__main__":
     main()

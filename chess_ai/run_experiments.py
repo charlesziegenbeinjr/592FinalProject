@@ -9,6 +9,27 @@ from os import listdir
 INITIAL_ELO = 1200
 K = 32 # for weaker players, 16 for masters
 
+
+'''
+simulate_many_games:
+
+This function calls upon host_chess_game functionality to simulate the chess games, and creates a loop that 
+will run the simulations a set number of times. For each game, it calculates the resulting ELO, 
+and appends it to a list of elo scores, helping an end user understand how the players are doing over time.
+Also calls upon the make plots function with the number of games so as to plot the changes in ELO scores over
+a set number of games
+
+Parameters:
+    - white - String, the type of player that white is: random, an AI player, or human
+    - black - String, the type of player that black is: random, an AI player, or human
+    - kriegspiel - Boolean, whether the experiments are for kriegspiel or not
+    - num_games - Int, the number of games per run to simulate
+    - num_runs - Int, the number of runs to simulate in an experiment
+
+Returns:
+    Null, effectively calculates the changes in ELO and then calls the make_plot function to generate a plot
+    for the observed 
+'''
 def simulate_many_games(white, black, kriegspiel=False, num_games=10, num_runs=10):
     total_runs_W = []
     total_runs_B = []
@@ -61,6 +82,19 @@ def simulate_many_games(white, black, kriegspiel=False, num_games=10, num_runs=1
     # plt.show()
     # fig.savefig("elo_scores.png", bbox_inches = 'tight', facecolor="white")
 
+'''
+ make_plot:
+
+This function calls upon functionality to create plots that show the average ELO scores for the 15 runs, 100 games per run.
+Similar to HW4 in setup as for the plotting.
+
+Parameters:
+    - num_games - the number of games to plot for
+
+Returns:
+    A plot showing the average elo scores for each game, with the number of elo scores being average for a specific game as the
+    number of runs passed in
+'''
 def make_plot(num_games):
     total_runs_W = []
     total_runs_B = []
@@ -102,7 +136,6 @@ def main():
                         kriegspiel=False, num_games=100, num_runs=15)
     end = datetime.now()
     print("Total time:", end-start)
-    #make_plot(50)
 
 
 

@@ -1,9 +1,3 @@
-"""
-FIXME
-
-https://readthedocs.org/projects/python-chess/downloads/pdf/latest/
-"""
-
 import chess
 import numpy as np
 from enum import Enum
@@ -17,12 +11,49 @@ from datetime import datetime
 
 DEPTH = {"W": 2, "B": 2}
 
+'''
+setup_board:
 
+Takes in an initial setup, if there is any. If left blank, we create a new default chessboard to start
+the game from
+
+Parameters:
+    - initial_setup: String, will be in FEN notation, which python-chess can interpret as an initial opponent_pieces
+
+Returns:
+    a starting chessboard, either predefined by the user or as a starting board used in standard games
+
+'''
 def setup_board(initial_setup=""):
     if initial_setup == "":
         return chess.Board()
     return chess.Board(initial_setup)
 
+'''
+host_game:
+
+Effectively hosts the game between two players. Drives the two players, calling their respective functions based on the type of 
+player that was selected to play. Switches the player and updates the board when the current players turn is over.
+Prints updates to the board itself following opponent moves and prints the final state of the board upon conclusion of the game
+
+Parameters:
+- initial_setup - String, the initial setup of the board that is requested: either standard or a board in FEN notation
+- white - String, the type of player that will be playing as white: can be "human", "mcts_ai", "alpha_beta_ai", or "random"
+- black - String, the type of player that will be playing as black: can be "human", "mcts_ai", "alpha_beta_ai", or "random"
+- kriegspiel - Boolean, whether or not we will be playing Kriegspiel (T) or standard Chess (F)
+- print_updates - Boolean, whether we should print updates after each move (T) or not (F)
+- print_output - Boolean, whether we should print the final game state (T) or not (F) following the end of the game
+
+Returns:
+IF there is an error with the type of player specified in the original function call, return "INVALID AI TYPE"
+ELSE returns the outcome of the game result, loops through until the end of the game. Once the end of the game is 
+prints the winning player, the outcome and returns the python-chess defined end game reason so for data purposes
+
+
+Returns:
+The outcome of the chess game, if there are no errors in the way that the function is specified (namely, if the AI type passed in
+is not defined)
+'''
 def host_game(initial_setup="", white="human", black="human", kriegspiel=False, print_updates=True, print_output=True):
     rng = np.random.default_rng()
     board = setup_board(initial_setup)

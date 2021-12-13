@@ -6,7 +6,51 @@ import heuristics
 import utils
 import copy
 
+'''
+Classes:
+    Node
+        Established to create objects that populate the search trees used by 
+        MCTS and AB Search algorithms.
+        
+        Properties:
+            - board_state: the state of the python-chess chessboard for the Node
+            - move: the physical move associated with the object
+            - children: the child nodes from the object, I.E the child moves 
+            that are possible from the currentNode
+            - parent: the parent node of the object
+            - N: number of visits to the parent of current node
+            - v: winning score of current node
+            - n: number of visits to the current node
+            - possible_moves: holds possible moves from current node
+            - sorted_children: sorted list containing children of current node
+            - diag_pawn_moves: diagonal pawn moves that can be made from current node
+            - kriegspiel: T/F as to if we are playing Kriegspiel or normal chess,
+            respectively
+            - opponent_pieces: uses the ground truth board state to figure out which 
+            opponent pieces still remain on the board (specifically how many of each type.
+             something a kriegspiel player would be able to deduce from capture messages from the
+             referee.
+            - gt_board_state: ground truth board state (both sides of board). 
+            Used for error checking and getting umpire messages 
+'''
+
 class Node:
+
+    '''
+    Establishes the Object with properties passed in
+                
+    Parameters: 
+        board_state - BoardState, the current chessboard from python-chess
+        parent - None, no parents yet
+        move - String, empty string, changed during play
+        kriegspiel - Boolean, depending on what variant we are playing
+        opponent_pieces - List, None to start, will include which opponent pieces remain
+        from the ground_truth board
+        gt_board_state - BoardState, None to start, ground_truth_board simulating umpire messages
+    
+    Returns:
+        A new object of class Node
+    '''
     def __init__(self, board_state=chess.Board(), move="", parent=None, kriegspiel=False, opponent_pieces=None, gt_board_state=None):
         self.board_state = board_state
         self.move = move
@@ -21,7 +65,21 @@ class Node:
         self.kriegspiel = kriegspiel
         self.opponent_pieces = opponent_pieces
         self.gt_board_state = gt_board_state
+    
+    '''
+    Node.get_heuristic:
 
+    Returns the value computed by the heuristic for both Kriegspiel and 
+    Regular chess
+
+    Parameters:
+        curr_player - the current player, W or B
+        update_v - Boolean, updates the win/loss of current node
+        when set to True
+
+    Returns:
+        the heuristic value for the node
+    '''
     def get_heuristic(self, curr_player, update_v=True):
         val = 0
         if self.kriegspiel:
@@ -33,7 +91,17 @@ class Node:
             self.v += val
         return val
 
+    '''
+    Node.remove_opponent_pieces:
 
+    For Kriegspiel, removes the opponents pieces from the legal_moves array when playing Kriegspiel
+
+    Parameters:
+        curr_player - the current player, I.E whose turn it is when this function is called
+    
+    Returns:
+        Void return, instead removes pieces on the board_state of the node
+    '''
     def remove_opponent_pieces(self, curr_player):
         board_array = utils.get_board_state_array(self.board_state)
         cols = chess.FILE_NAMES
@@ -45,6 +113,20 @@ class Node:
                      (board_array[row][col].islower() and curr_player=="W"): # current player is black and want to remove white pieces
                     self.board_state.remove_piece_at(8*(7-row)+col)
 
+    '''
+    Node.get_diag_pawn_moves:
+
+    For Kriegspiel, an edge case state when we need to get the number of diagonal pawn moves that can be made.
+    Given the setup of Kriegspiel, not knowing where the opponent's pieces are can make python-chess think there aren't 
+    legal moves remaining, so this checks to see if a pawn capture can be made, as diagonal pawn moves aren't legal unless
+    it is a legal capture move
+
+    Parameters:
+        curr_player - the current player, I.E whose turn it is when this function is called
+
+    Returns:
+        Void return, instead adds potential diagonal pawn moves for capture to the diag_pawn_moves property of the current node
+    '''
     def get_diag_pawn_moves(self, curr_player):
         board_array = utils.get_board_state_array(self.board_state)
         for row in range(8):
@@ -67,6 +149,18 @@ class Node:
                         diag_move = curr_pos + chess.FILE_NAMES[col+1] + str(8 - (row + 1))
                         self.diag_pawn_moves.append(chess.Move.from_uci(diag_move))
 
+    '''
+    Node.get_nth_best_move:
+
+    Returns the nth best move according to the search algorithm where n is the number of move attempts
+
+    Parameters:
+        n - Int, number of move attempts
+        curr_player - the current player, I.E whose turn it is when this function is called
+    
+    Returns:
+        Int, returns the nth best move according to the search algorithm where n is the number of move attempts
+    '''
     def get_nth_best_move(self, n, curr_player):
         if self.children == set():
             for next_move in list(self.board_state.legal_moves):
@@ -121,7 +215,19 @@ class Node:
                 self.sorted_children = -1
             return selected_child.v, selected_child.move
 
+    '''
+    Node.update_opponent_pieces
 
+    opponent_pieces is the dictionary that maps piece type to the number of 
+    opponent pieces of that type remaining
+
+    Parameters:
+        curr_player - the current player, I.E whose turn it is when this function is called
+        full_board_state - the entire chessboard
+
+    Returns:
+        an update to the opponent_pieces dictionary
+    '''
     def update_opponent_pieces(self, curr_player, full_board_state):
         self.opponent_pieces = {}
         board_array = utils.get_board_state_array(full_board_state)

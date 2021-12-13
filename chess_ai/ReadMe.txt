@@ -1,7 +1,37 @@
 How To Run Our Programs:
 
-1. If you want to play a Games in a Non-Testing Suite:
+1. If you want to play a game in a Non-Testing Suite (Play One Game Only):
+> python host_chess_game.py 
 
+Update main() in host_chess_game():
+
+def main():
+    start = datetime.now()
+    host_game(white="alpha_beta_ai", black="random_ai", kriegspiel=False, print_updates=False, print_output=True)
+    end = datetime.now()
+    print("Total time:", end-start)
+
+Options for White/Black: "human", "mcts_ai", "alpha_beta_ai", or "random_ai"
+Options for Kriegspiel: True or False
+Options for print_updates: True or False
+Options for print_output: True or False
+
+2. If you want to run a suite of tests (Multiple Games, Multiple Runs):
+
+Update main() in run_experiments():
+
+def main():
+    start = datetime.now()
+    simulate_many_games("alpha_beta_ai", "alpha_beta_ai", kriegspiel=False, num_games=100, num_runs=15)
+    end = datetime.now()
+    print("Total time:", end-start)
+
+Options for First Two Arguments: "human", "mcts_ai", "alpha_beta_ai", or "random_ai"
+Options for Kriegspiel: True or False
+Options for num_games: Select Any Int
+Options for num_runs: Select Any Int
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our repository is set up as follows:
 
@@ -108,24 +138,26 @@ Classes:
 
             Node.get_nth_best_move:
 
-                !!! FILL IN !!!
+                Returns the nth best move according to the search algorithm where n is the number of move attempts
 
                 Parameters:
-                    n - 
+                    n - Int, number of move attempts
                     curr_player - the current player, I.E whose turn it is when this function is called
                 
                 Returns:
-
+                    Int, returns the nth best move according to the search algorithm where n is the number of move attempts
 
             Node.update_opponent_pieces
 
-                !!! FILL IN !!!
+                opponent_pieces is the dictionary that maps piece type to the number of 
+                opponent pieces of that type remaining
 
                 Parameters:
                     curr_player - the current player, I.E whose turn it is when this function is called
-                    full_board_state - 
+                    full_board_state - the entire chessboard
 
                 Returns:
+                    an update to the opponent_pieces dictionary
 
 
 
@@ -362,7 +394,7 @@ Functions:
     
     UCB1:
 
-        Expansion/Exploration function. currentNode.v + np.sqrt(2) *
+        Exploitation/Exploration function. currentNode.v + np.sqrt(2) *
         (np.sqrt(np.log(currentNode.N + np.exp(1) + (10**-7)) / (currentNode.n + (10**-11))))
         as defined by the book. Notice the terms to avoid DivisionByZero.
 
@@ -388,8 +420,8 @@ Functions:
 
     playout:
 
-        Upon getting a Node from expansion, playout will make moves based on heuristic function till we 
-        reach end of the game and will return leaf node. 
+        Upon getting a Node from expansion, playout will make moves based on heuristic function or select random
+        values till we reach end of the game and will return leaf node. 
         If we reach the end of the game, we evaluate the result of the game and send values back accordingly.
 
         Parameters:

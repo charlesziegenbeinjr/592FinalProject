@@ -8,6 +8,23 @@ import copy
 import heuristics
 
 
+'''
+depth_limited_ab_search:
+
+Similar to the textbook version, but Depth Limited Alpha Beta Search. 
+Recursively called to go down the depth that set in the function call.
+
+Parameters:
+    - node - Node object, the current node
+    - depth - int, the depth of the tree that is to be explored
+    - alpha - float, the value of alpha, -infinity
+    - beta - float, the value of beta, infinity
+    - maximizing_player - Boolean, whether or not the current player is the maximizing player
+    - curr_player - the current player, either B or W
+
+Returns:
+    returns the optimal move selected by the A/B search algorithm
+'''
 
 def depth_limited_ab_search(node, depth, alpha, beta, maximizing_player, curr_player):
     """
